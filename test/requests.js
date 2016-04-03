@@ -399,7 +399,7 @@ var tests = function(web3) {
 
       web3.eth.sendTransaction(tx_data, function(err, result) {
         if (err) {
-          assert.equal(err.message.indexOf("Error: could not unlock signer account"), 0);
+          assert.notEqual(err.message.indexOf("could not unlock signer account"), -1);
           done();
         } else {
           assert.fail("Should have received an error")
@@ -504,7 +504,9 @@ var logger = {
 
 describe("Provider:", function() {
   var web3 = new Web3();
-  web3.setProvider(TestRPC.provider(logger));
+  web3.setProvider(TestRPC.provider({
+    logger: logger
+  }));
   tests(web3);
 });
 
@@ -514,7 +516,9 @@ describe("Server:", function(done) {
   var server;
 
   before("Initialize TestRPC server", function(done) {
-    server = TestRPC.server(logger);
+    server = TestRPC.server({
+      logger: logger
+    });
     server.listen(port, function() {
       web3.setProvider(new Web3.providers.HttpProvider("http://localhost:" + port));
       done();
